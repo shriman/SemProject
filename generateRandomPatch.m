@@ -1,21 +1,25 @@
-function patches = generateRandomPatch(images,imageSizeX, imageSizeY, patchSizeX,patchSizeY,number)
+function patches = generateRandomPatch(images,imageSizeX, imageSizeY, patchSizeX,patchSizeY,numberOfPatches)
    %this function is used to generate the patches from the input images
    %assuming 'images' is a 3d matrix of images withimages on rows and  R G
    %B channels as rows in Z-dimension
    numberOfImages = size(images,1);
-   pos = round(numberOfImages*(rand(number,1)));
-   
+   pos = floor(numberOfImages*(rand(numberOfPatches,1))) + 1;
+  
    patch = images(pos,:,:);
-   patches = zeros(number,patchSizeX*patchSizeY,3);
+   patches = zeros(numberOfPatches,patchSizeX*patchSizeY,3);
    
-   for i =1:1:number
+   for i =1:1:numberOfPatches
+       if (mod(i,10000) == 0) 
+           fprintf('Extracting patch: %d / %d\n', i, numberOfPatches);
+       end
+       
        red = reshape(patch(i,:,1),imageSizeX,imageSizeY);
        green = reshape(patch(i,:,2),imageSizeX,imageSizeY);
        blue = reshape(patch(i,:,3),imageSizeX,imageSizeY);
        
-       posX = (imageSizeX - patchSizeX)*rand(1) + 1;
-       posY = (imageSizeY - patchSizeY)*rand(1) + 1;
-       
+       posX = floor((imageSizeX - patchSizeX)*rand(1)) + 1;
+       posY = floor((imageSizeY - patchSizeY)*rand(1)) + 1;
+        
        patchRed = red(posX:posX+patchSizeX-1,posY:posY+patchSizeY-1);
        patchGreen = green(posX:posX+patchSizeX-1,posY:posY+patchSizeY-1);
        patchBlue = blue(posX:posX+patchSizeX-1,posY:posY+patchSizeY-1);
@@ -30,10 +34,5 @@ function patches = generateRandomPatch(images,imageSizeX, imageSizeY, patchSizeX
        
    end
    
-   
-   
-   
-   
-   
-   
+   s
 end
