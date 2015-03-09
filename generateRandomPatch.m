@@ -34,5 +34,5 @@ function patches = generateRandomPatch(images,imageSizeX, imageSizeY, patchSizeX
        
    end
    
-   s
+  
 end
