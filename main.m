@@ -8,7 +8,7 @@ imageSizeY = 32;
 patchSizeX = 6;
 patchSizeY = 6;
 colorChannels = 3;
-numberOfPatches = 400000;
+numberOfPatches = 40000;
 downsampleRate = 2;
 
 %information about the k-means

@@ -12,16 +12,16 @@ trainX = reshape(trainX,numberOfImages,imageSizeX,imageSizeY,colorChannels);
 numberOfCenters = size(centers,1); 
 centers = reshape(centers,numberOfCenters,patchSizeX,patchSizeY,colorChannels);
 
+
+
 %now apply the convlution funciton
 
-row = imageSizeX - patchSizeX +1;
-col = imageSizeY - patchSizeY +1;
-noOfSamples = row*col;
-featureMap = [];
-fprintf('extracting feature:');
+% row = imageSizeX - patchSizeX +1;
+% col = imageSizeY - patchSizeY +1;
+% noOfSamples = round((row*col)/sampleRate) +1;
+% feature = zeros(numberOfImages,row*col,numberOfCenters*colorChannels);
+
 for i = 1:1:numberOfImages
-    
-    feature = zeros(1,noOfSamples,numberOfCenters*colorChannels);
     if (mod(i,10000) == 0) 
            fprintf('extracting feature: %d / %d\n', i, numberOfImages);
     end
@@ -34,15 +34,13 @@ for i = 1:1:numberOfImages
         
         for k=1:1:colorChannels
             imageFeature = conv2(image(:,:,k),mask(:,:,k),'valid');
-            imageFeature = reshape(imageFeature,1,noOfSamples,1);
-%             imageFeature = downsample(imageFeature,sampleRate);
-            pos = (j-1)*colorChannels + k;
-            feature(1,:,pos) = imageFeature; 
+            imageFeature = reshape(imageFeature,1,noOfSamples);
+            imageFeature = downsample(imageFeature,sampleRate);
+            feature = imageFeature; 
+            
         end
         
     end
-    feature =  downsample(feature,sampleRate);
-    featureMap = [featureMap;feature];
 end
 
 
