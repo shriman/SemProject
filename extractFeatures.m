@@ -1,50 +1,59 @@
-function [featureMap] = extractFeatures(trainX,imageSizeX,imageSizeY,centers,patchSizeX,patchSizeY,colorChannels,sampleRate)
-%EXTRACTFEATURES Summary of this function goes here
-%this function is used to extract features fromthe test images given the
-%centroids and
-%here an image is sent as input to the function
-
-%reshape the input data and the centroids so the concolution can be
-%performed
-numberOfImages = size(trainX,1);
-trainX = reshape(trainX,numberOfImages,imageSizeX,imageSizeY,colorChannels);
-
-numberOfCenters = size(centers,1); 
-centers = reshape(centers,numberOfCenters,patchSizeX,patchSizeY,colorChannels);
-
-%now apply the convlution funciton
-
-row = imageSizeX - patchSizeX +1;
-col = imageSizeY - patchSizeY +1;
-noOfSamples = row*col;
-featureMap = [];
-fprintf('extracting feature:');
-for i = 1:1:numberOfImages
+function XC = extractFeatures(X, centroids, rfSize, CIFAR_DIM,sampleRate)
+%   assert(nargin == 4 || nargin == 6);
+%   whitening = (nargin == 6);
+  numCentroids = size(centroids,1);
+  
+  % compute features for all training images
+  XC = [];
+  for i=1:size(X,1)
+    if (mod(i,1000) == 0) fprintf('Extracting features: %d / %d\n', i, size(X,1)); end
     
-    feature = zeros(1,noOfSamples,numberOfCenters*colorChannels);
-    if (mod(i,10000) == 0) 
-           fprintf('extracting feature: %d / %d\n', i, numberOfImages);
-    end
-    image = trainX(i,:,:,:);
-    image = reshape(image,imageSizeX,imageSizeY,colorChannels);
-    for j = 1:1:numberOfCenters
-        mask = centers(j,:,:,:);
-        mask = reshape(mask,patchSizeX,patchSizeY,colorChannels);
-        %now use convn function in matlab to optimize the convolution
-        
-        for k=1:1:colorChannels
-            imageFeature = conv2(image(:,:,k),mask(:,:,k),'valid');
-            imageFeature = reshape(imageFeature,1,noOfSamples,1);
-%             imageFeature = downsample(imageFeature,sampleRate);
-            pos = (j-1)*colorChannels + k;
-            feature(1,:,pos) = imageFeature; 
-        end
-        
-    end
-    feature =  downsample(feature,sampleRate);
-    featureMap = [featureMap;feature];
+    % extract overlapping sub-patches into rows of 'patches'
+    patches = [ im2col(reshape(X(i,1:1024),CIFAR_DIM(1:2)), [rfSize rfSize]) ;
+                im2col(reshape(X(i,1025:2048),CIFAR_DIM(1:2)), [rfSize rfSize]) ;
+                im2col(reshape(X(i,2049:end),CIFAR_DIM(1:2)), [rfSize rfSize]) ]';
+
+    % do preprocessing for each patch
+    
+    % normalize for contrast
+%     patches = bsxfun(@rdivide, bsxfun(@minus, patches, mean(patches,2)), sqrt(var(patches,[],2)+10));
+%     % whiten
+%     if (whitening)
+%       patches = bsxfun(@minus, patches, M) * P;
+%     end
+    
+    % compute 'triangle' activation function
+    xx = sum(patches.^2, 2);
+    cc = sum(centroids.^2, 2)';
+    xc = patches * centroids';
+    
+    z = sqrt( bsxfun(@plus, cc, bsxfun(@minus, xx, 2*xc)) ); % distances
+    [v,inds] = min(z,[],2);
+    mu = mean(z, 2); % average distance to centroids for each patch
+    patches = max(bsxfun(@minus, mu, z), 0);
+    % patches is now the data matrix of activations for each patch
+    
+    % reshape to numCentroids-channel image
+%     prows = CIFAR_DIM(1)-rfSize+1;
+%     pcols = CIFAR_DIM(2)-rfSize+1;
+%     patches = reshape(patches, prows, pcols, numCentroids);
+    
+    %now write the downsampling routine
+    patches = downsample(patches,sampleRate);
+    
+    
+    % pool over quadrants
+    
+%     halfr = round(prows/2);
+%     halfc = round(pcols/2);
+%     q1 = sum(sum(patches(1:halfr, 1:halfc, :), 1),2);
+%     q2 = sum(sum(patches(halfr+1:end, 1:halfc, :), 1),2);
+%     q3 = sum(sum(patches(1:halfr, halfc+1:end, :), 1),2);
+%     q4 = sum(sum(patches(halfr+1:end, halfc+1:end, :), 1),2);
+    
+    % concatenate into feature vector
+    XC = [XC;patches];
+  
+  end
+  
 end
-
-
-end
-

@@ -8,9 +8,9 @@ imageSizeY = 32;
 patchSizeX = 6;
 patchSizeY = 6;
 colorChannels = 3;
-numberOfPatches = 40000;
+numberOfPatches = 4000;
 downsampleRate = 2;
-
+CIFAR_DIM = [32,32,3];
 %information about the k-means
 numberOfCentroids = 5;
 
@@ -23,11 +23,11 @@ f3 = load('data_batch_3.mat');
 f4 = load('data_batch_4.mat');
 f5 = load('data_batch_5.mat');
 
-% trainX = double(f1.data);
-% labels = double(f1.labels);
+trainX = double(f1.data);
+labels = double(f1.labels);
 
-trainX = double([f1.data;f2.data;f3.data;f4.data;f5.data]);
-labels = double([f1.labels;f2.labels;f3.labels;f4.labels;f5.labels]);
+% trainX = double([f1.data;f2.data;f3.data;f4.data;f5.data]);
+% labels = double([f1.labels;f2.labels;f3.labels;f4.labels;f5.labels]);
 clear f1 f2 f3 f4 f5; % clear the stored variables form the memory
 
 numberOfImages = size(trainX,1);
@@ -45,7 +45,7 @@ tic;
 %images and the centroids formed from the kmeans algo
 %before passing the training data and the centers reshape the two inputs.
 
-featureMap = extractFeatures(trainX,imageSizeX,imageSizeY,centers,patchSizeX,patchSizeY,colorChannels,downsampleRate);
+featureMap = extractFeatures(trainX,centers,patchSizeX,CIFAR_DIM,downsampleRate);
 
 
 
