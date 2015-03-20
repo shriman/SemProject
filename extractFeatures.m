@@ -1,6 +1,7 @@
 function XC = extractFeatures(X, centroids, rfSize, CIFAR_DIM,sampleRate)
 %   assert(nargin == 4 || nargin == 6);
 %   whitening = (nargin == 6);
+% this is a new comment to this funciton
   numCentroids = size(centroids,1);
   
   % compute features for all training images
