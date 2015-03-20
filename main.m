@@ -45,7 +45,7 @@ tic;
 %images and the centroids formed from the kmeans algo
 %before passing the training data and the centers reshape the two inputs.
 
-featureMap = extractFeatures(trainX,centers,patchSizeX,CIFAR_DIM,downsampleRate);
+featureMap = extractFeatures(trainX(1,:),centers,patchSizeX,CIFAR_DIM,downsampleRate);
 
 
 
