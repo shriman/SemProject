@@ -16,7 +16,7 @@ numberOfCentroids = 5;
 
 
 %load data from the datasets
-fprintf('Loading training data...\n');
+
 f1 = load('data_batch_1.mat');
 f2 = load('data_batch_2.mat');
 f3 = load('data_batch_3.mat');
