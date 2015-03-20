@@ -29,7 +29,7 @@ for i=1:size(pathOfImages,1)
         fprintf('Loading image: %d / %d\n', i, size(pathOfImages,1));
     end
     % Load image from path
-    nameOfImage = strsplit(char(pathOfImages(1)), '/'); 
+    nameOfImage = strca strcat(char(pathOfImages(i)), '/'); 
     nameOfImage = char(nameOfImage(size(nameOfImage,2)));
     currentImage = imread(nameOfImage);
     % Re-construct to CIFAR-10 structure 

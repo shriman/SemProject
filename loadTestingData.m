@@ -1,4 +1,4 @@
-function [ dataset ] = loadTrainingData()
+function [ dataset ] = loadTestingData()
 %LOADTRECVID 
 % from, to determine the number of images being loaded = to-from+1
 % Read sp.list to get paths of images
@@ -6,7 +6,7 @@ function [ dataset ] = loadTrainingData()
 % Re-construct to CIFAR-10 structure 
 
 % Notation: 
-    % - All of images in sp.list are dataset are used for training
+    % - All of images in sp.list are used for testing
     % - Size of image = 240x320x3 but some of them are different such as
     % 240x360x3. Then, resize then into 240x320x3
     % - Total number of images in sp.list = 10155
@@ -17,9 +17,9 @@ clc;
 % Add subdirectories of current work directory 
 %addpath(genpath(pwd));
 
-fprintf('Loading training data...\n');
+fprintf('Loading testing data...\n');
 
-pathOfImages = importdata('sp.list');
+pathOfImages = importdata('sp_test.list');
 
 numImages = size(pathOfImages,1);
 sizeImg = [240 320 3];
